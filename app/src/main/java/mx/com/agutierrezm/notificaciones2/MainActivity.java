@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (REQUEST_CODE_SECOND_ACTIVITY==requestCode && requestCode==RESULT_OK){
+        if (REQUEST_CODE_SECOND_ACTIVITY==requestCode && resultCode==RESULT_OK){
             String name = data.getExtras().getString("key_name"," ");
             String description = data.getExtras().getString("key_description"," ");
             txtnombre.setText(name);
