@@ -3,6 +3,7 @@ package mx.com.agutierrezm.notificaciones2;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 
@@ -25,6 +26,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         txtnombre = (TextView)findViewById(R.id.txtnombre);
         txtdescripcion = (TextView)findViewById(R.id.txtdescripcion);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.tbSave);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Hola mundo");
+        getSupportActionBar().setIcon(android.R.drawable.ic_dialog_email);
+
+        //getSupportActionBar().setLogo(R.drawable.ic_communication_ring_volume);
+
+
     }
 
     @Override
@@ -50,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             String description = data.getExtras().getString("key_description"," ");
             txtnombre.setText(name);
             txtdescripcion.setText(description);
+            getSupportActionBar().setTitle(name);
         }else {
             super.onActivityResult(requestCode, resultCode, data);
         }
