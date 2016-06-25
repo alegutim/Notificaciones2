@@ -1,6 +1,7 @@
 package mx.com.agutierrezm.notificaciones2.service;
 
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
+import mx.com.agutierrezm.notificaciones2.Main2Activity;
 import mx.com.agutierrezm.notificaciones2.R;
 
 /**
@@ -17,6 +19,7 @@ import mx.com.agutierrezm.notificaciones2.R;
  */
 public class ServiceNotification extends Service {
     private MyAsyncTask myAsyncTask;
+    private int id;
 
 
     @Nullable
@@ -28,9 +31,15 @@ public class ServiceNotification extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+
     }
 
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if(intent.getExtras()!=null && intent.getExtras().containsKey("key_id")){
+            id = intent.getExtras().getInt("key_id");
+        }
+
+
         if (myAsyncTask==null){
             myAsyncTask = new MyAsyncTask();
             myAsyncTask.execute();
@@ -45,7 +54,7 @@ public class ServiceNotification extends Service {
 
         @Override
         protected void onPreExecute() {
-            super.onPreExecute();
+
             mNotif = new NotificationCompat
                     .Builder(getApplicationContext())
                     .setContentTitle("Descargando MP4")
@@ -59,7 +68,7 @@ public class ServiceNotification extends Service {
             for ( int i=0; i<10;i++) {
                 publishProgress(i);
                 try {
-                    Thread.sleep(1000*3);
+                    Thread.sleep(1000*1);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                     return false;
@@ -86,10 +95,26 @@ public class ServiceNotification extends Service {
                 mNotif.setContentTitle("Descarga completa ;)");
                 mNotif.setContentText("Se ha compleado la descarga de pumas");
                 mNotif.setContentInfo("Descargado");
+                mNotif.setAutoCancel(true);
+                mNotif.setStyle( new NotificationCompat.BigTextStyle()
+                        .bigText("Se ha compleado la descarga de pumas \nGracias por usar\n Mi App"));
+                PendingIntent pendingIntent = PendingIntent
+                        .getActivity(getApplicationContext(),0,new Intent(getApplicationContext(), Main2Activity.class),PendingIntent.FLAG_UPDATE_CURRENT);
+                mNotif.setContentIntent(pendingIntent);
+
+                PendingIntent piService = PendingIntent.
+                        getService(getApplicationContext(),1,
+                                new Intent(getApplicationContext()
+                                        ,ServiceNotification.class)
+                                        .putExtra("key_id",id+1)
+                                ,PendingIntent.FLAG_UPDATE_CURRENT);
+                mNotif.addAction(android.R.drawable.ic_input_add,"Descargar de nuevo"
+                        ,piService);
 
                 NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                manager.notify(0,mNotif.build());
+                manager.notify(id,mNotif.build());
                 myAsyncTask = null;
+                stopSelf();;
 
             }
         }
